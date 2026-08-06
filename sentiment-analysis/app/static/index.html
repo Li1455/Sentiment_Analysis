@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Engine | AI Mini-Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-glow bg-glow-1"></div>
+    <div class="background-glow bg-glow-2"></div>
+
+    <main class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="badge">NLP & AI Engine</div>
+            <h1>Sentiment Analysis <span class="gradient-text">Studio</span></h1>
+            <p class="subtitle">Enter text to perform real-time sentiment analysis using NLTK's VADER model. Includes type validation and comprehensive confidence scores.</p>
+        </header>
+
+        <!-- Main Layout Split -->
+        <div class="layout-grid">
+            <!-- Left Panel: Input & Interactive Tester -->
+            <section class="card glass input-card">
+                <h2>Interactive Analyzer</h2>
+                <p class="card-desc">Type your text below. The model will analyze it and return positive, negative, neutral, and compound scores.</p>
+                
+                <div class="input-group">
+                    <label for="text-input">Text Input</label>
+                    <textarea 
+                        id="text-input" 
+                        placeholder="Type something here... E.g., I absolutely love how fast and beautiful this application is!" 
+                        maxlength="1000"
+                    ></textarea>
+                    <div class="textarea-footer">
+                        <span id="char-counter">0 / 1000 characters</span>
+                        <button id="clear-btn" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+
+                <!-- API / Input Error Alert -->
+                <div id="error-alert" class="alert error hidden">
+                    <span class="alert-icon">⚠️</span>
+                    <span id="error-msg" class="alert-text">Error message here</span>
+                </div>
+
+                <div class="action-row">
+                    <button id="analyze-btn" class="btn btn-primary">
+                        <span>Analyze Sentiment</span>
+                        <span class="btn-loader hidden"></span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Panel: Results View -->
+            <section class="card glass result-card" id="result-card">
+                <div class="result-placeholder" id="result-placeholder">
+                    <div class="placeholder-icon">📊</div>
+                    <h3>Analysis Result</h3>
+                    <p>Enter text on the left and click "Analyze Sentiment" to see VADER analysis results here.</p>
+                </div>
+
+                <div class="result-content hidden" id="result-content">
+                    <div class="result-header">
+                        <h3>Sentiment Class</h3>
+                        <div id="sentiment-badge" class="sentiment-badge neutral">Neutral</div>
+                    </div>
+
+                    <!-- Sentiment Meter / Gauge -->
+                    <div class="gauge-container">
+                        <div class="gauge-label">
+                            <span>Confidence</span>
+                            <span id="confidence-percentage">0%</span>
+                        </div>
+                        <div class="gauge-track">
+                            <div id="confidence-bar" class="gauge-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Scores breakdown -->
+                    <div class="scores-breakdown">
+                        <h4>Polarity Breakdown</h4>
+                        
+                        <div class="score-row">
+                            <span class="score-label positive-color">Positive Score</span>
+                            <span class="score-value" id="pos-score">0.000</span>
+                            <div class="score-track"><div id="pos-bar" class="score-bar positive-bg"></div></div>
+                        </div>
+
+                        <div class="score-row">
+                            <span class="score-label negative-color">Negative Score</span>
+                            <span class="score-value" id="neg-score">0.000</span>
+                            <div class="score-track"><div id="neg-bar" class="score-bar negative-bg"></div></div>
+                        </div>
+
+                        <div class="score-row">
+                            <span class="score-label neutral-color">Neutral Score</span>
+                            <span class="score-value" id="neu-score">0.000</span>
+                            <div class="score-track"><div id="neu-bar" class="score-bar neutral-bg"></div></div>
+                        </div>
+
+                        <div class="score-row">
+                            <span class="score-label compound-color">Compound Polarity</span>
+                            <span class="score-value" id="compound-score">0.0000</span>
+                            <div class="score-track"><div id="compound-bar" class="score-bar compound-bg"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="validation-info">
+                        <div class="info-icon">ℹ️</div>
+                        <p class="info-text">VADER Compound scores range from -1.0 (extremely negative) to +1.0 (extremely positive). Compound &ge; 0.05 is Positive, &le; -0.05 is Negative, and in-between is Neutral.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Section: Test Validation Suite -->
+        <section class="card glass evaluation-section">
+            <div class="evaluation-header">
+                <div>
+                    <h2>Validation Test Suite (12 Sentences)</h2>
+                    <p class="card-desc">Click a sentence to test it individually, or run the full test suite to inspect predictions, ground truths, and model accuracy.</p>
+                </div>
+                <button id="run-all-tests-btn" class="btn btn-accent">Run Full Test Suite</button>
+            </div>
+
+            <!-- Test Results Table -->
+            <div class="table-container">
+                <table class="evaluation-table">
+                    <thead>
+                        <tr>
+                            <th>Text Sentence</th>
+                            <th style="width: 130px;">Expected Sentiment</th>
+                            <th style="width: 130px;">Model Prediction</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 100px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="test-table-body">
+                        <!-- Filled dynamically by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Results Dashboard -->
+            <div id="test-summary-dashboard" class="test-summary-dashboard hidden">
+                <div class="metric-card">
+                    <span class="metric-value" id="summary-accuracy">100%</span>
+                    <span class="metric-label">Model Accuracy</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value" id="summary-passed">12 / 12</span>
+                    <span class="metric-label">Tests Passed</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value" id="summary-failed">0</span>
+                    <span class="metric-label">Failed/Uncertain</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer-note">
+            <p>Sentiment Analysis Mini Project &bull; Created with Python, NLTK VADER, and Vanilla CSS/JS</p>
+        </footer>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
